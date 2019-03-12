@@ -1,0 +1,21 @@
+.search {
+    margin-top: 30px;
+}
+
+.pet-images {
+    transform: translate(0px, 100px);
+}
+
+.dress-image {
+    width: 200px;
+    transform: translate(20px) rotate(13deg);
+}
+
+.destination-image {
+    width: 200px;
+    transform: rotate(-15deg);
+}
+
+.pets-container {
+    margin: 70px auto 50px;
+}
