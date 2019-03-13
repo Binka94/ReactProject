@@ -25,7 +25,7 @@ function Footer(props) {
             <div className="footer-copyright">
                 <div className="container">
                 © {new Date().getFullYear()} INTERNATIONAL LUXURY WEDDING PLANNERS & PARTY PRODUCERS PROJECT
-                <a className="grey-text text-darken-4 right" href="https://github.com/Binka94/WeddingAgency">GitHub</a>
+                <a className="grey-text text-darken-4 right" href="https://github.com/Binka94/ReactProject">GitHub</a>
                 </div>
             </div>
             </footer>
