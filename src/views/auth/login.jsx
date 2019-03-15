@@ -1,4 +1,5 @@
 import React from 'react';
+//import { Redirect } from 'react-router-dom';
 
 import Input from '../../components/form/input';
 import Loading from '../../components/common/loading';
@@ -6,15 +7,15 @@ import Loading from '../../components/common/loading';
 import AuthenticationService  from '../../services/authentication-service';
 import WithAuthentication from '../../hocs/with-user-authentication';
 
+import {userLoginModel} from '../../models/user-login-model';
+import notify from '../../util/notification';
+
 class Login extends React.Component {
     constructor(props){
         super(props);
 
         this.state = {
-            user: {
-                username: '',
-                password: '',
-            },
+            user: userLoginModel.defaultState,
             isLoading: false,
         };
 
@@ -23,8 +24,14 @@ class Login extends React.Component {
         this.onChangeHandler = this.onChangeHandler.bind(this);
         this.onSubmitHandler = this.onSubmitHandler.bind(this);
     }
+    componentDidMount() {
+        window.M.updateTextFields();
+    }
 
     onChangeHandler(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
         const name = event.target.name;
         
         if(this.state.user.hasOwnProperty(name)) {            
@@ -43,23 +50,15 @@ class Login extends React.Component {
         event.preventDefault();
         this.setState({isLoading: true});
 
-        const user = {...this.state.user};
+      const {user} = this.state; 
 
         const result = await this.AuthenticationService.login(user);
 
-        if(result.debug) {
-            console.log(result.debug);
+        if(notify.showIfError(result, 'Invalid Credentials!')) {
             this.setState({isLoading: false});
             return;
         }
 
-        if(result.error) {
-            console.log(result.error);
-            console.log(result.description);
-            this.setState({isLoading: false});
-            return;
-        }
-        
         window.localStorage.setItem('userId', result._id);
         window.localStorage.setItem('username', result.username);
         window.localStorage.setItem('authtoken', result._kmd.authtoken);
@@ -72,7 +71,7 @@ class Login extends React.Component {
 
         window.localStorage.setItem('isAdmin', isAdmin);
 
-        const registeredUser = {
+        const loggedInUser = {
             id: result._id,
             username: result.username,
             authtoken: result._kmd.authtoken,
@@ -80,14 +79,16 @@ class Login extends React.Component {
             isAdmin
         };
         
+        notify.success(`Hello, ${result.lastName}! We are glad to see you again! :)`);
         this.setState({isLoading: false});
-        this.props.updateUser(registeredUser);
+        this.props.updateUser(loggedInUser);
     }
 
     render() {
+        const {isLoading, user} = this.state;
         return (
             <div className="row container block">     
-            {this.state.isLoading ? <Loading /> : null}
+            {isLoading ? <Loading /> : null}
             <h2 className="purple-text text-darken-4 center">Login</h2>
             <form className="col s4 offset-s4" onSubmit={this.onSubmitHandler}>                
                 <div className="row">
@@ -95,6 +96,7 @@ class Login extends React.Component {
                         name="username" 
                         label="Username" 
                         type="text" 
+                        value={user.username}
                         className="s12" 
                         onChangeHandler={this.onChangeHandler} />
                 </div>
@@ -102,7 +104,8 @@ class Login extends React.Component {
                     <Input 
                         name="password" 
                         label="Password" 
-                        type="password" 
+                        type="password"
+                        value={user.password} 
                         className="s12" 
                         onChangeHandler={this.onChangeHandler} />
                 </div> 
