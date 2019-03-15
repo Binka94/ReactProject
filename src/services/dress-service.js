@@ -177,5 +177,4 @@ class DressService {
         }
     }
 }
-
 export default DressService;
